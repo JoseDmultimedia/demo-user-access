@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {inject} from '@loopback/core';
 import {
   Request,
@@ -6,6 +7,7 @@ import {
   response,
   ResponseObject,
 } from '@loopback/rest';
+import {PermissionKeys} from '../authorization/permission-keys';
 
 /**
  * OpenAPI response for ping()
@@ -41,6 +43,7 @@ export class PingController {
   constructor(@inject(RestBindings.Http.REQUEST) private req: Request) {}
 
   // Map to `GET /ping`
+  @authenticate('jwt', {required:[PermissionKeys.adminRole]})
   @get('/ping')
   @response(200, PING_RESPONSE)
   ping(): object {
