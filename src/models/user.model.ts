@@ -49,9 +49,6 @@ export class User extends Entity {
   })
   rolId?: number;
 
-  @property.array(String)
-  permissions:string[];
-
   constructor(data?: Partial<User>) {
     super(data);
   }

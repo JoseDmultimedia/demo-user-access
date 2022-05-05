@@ -7,7 +7,9 @@ import {
   response,
   ResponseObject,
 } from '@loopback/rest';
-import {PermissionKeys} from '../authorization/permission-keys';
+import {roles} from '../authorization/permission-keys';
+import {authorize} from '@loopback/authorization';
+import { basicAuthorization } from '../services';
 
 /**
  * OpenAPI response for ping()
@@ -43,7 +45,9 @@ export class PingController {
   constructor(@inject(RestBindings.Http.REQUEST) private req: Request) {}
 
   // Map to `GET /ping`
-  @authenticate('jwt', {required:[PermissionKeys.adminRole]})
+  //@authenticate('jwt', {required: [PermissionKeys.adminRole]})
+  @authenticate('jwt')
+  @authorize({ allowedRoles: [roles.adminRole.toString(),], voters: [basicAuthorization] })
   @get('/ping')
   @response(200, PING_RESPONSE)
   ping(): object {

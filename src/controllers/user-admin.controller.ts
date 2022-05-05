@@ -3,7 +3,6 @@
 import {inject} from '@loopback/core';
 import {getJsonSchemaRef, HttpErrors, post, requestBody} from '@loopback/rest';
 import _ from 'lodash';
-import {PermissionKeys} from '../authorization/permission-keys';
 import {Credentials, UserRepository} from '../repositories';
 import {User} from '../models';
 import {BcryptHasher} from '../services/hash.password';
@@ -48,20 +47,6 @@ export class UserAdminController {
   })
   async signup(@requestBody() userData: User) {
     validateCredentials(_.pick(userData, ['email', 'password']));
-
-    console.log(userData);
-
-    if (userData.rolId === 1){
-      //userData.rolId = 1;
-      userData.permissions = [PermissionKeys.adminRole];
-      console.log('primer if')
-    }else if (userData.rolId === 2){
-      //userData.rolId  = 2;
-      userData.permissions = [PermissionKeys.userRole];
-      console.log('segundo if')
-    }else{
-      throw new HttpErrors.UnprocessableEntity('Invalid Role')
-    }
 
     userData.password = await this.hasher.hashPassword(userData.password);
     const savedUser = await this.userRepository.create(userData);
