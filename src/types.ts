@@ -1,13 +1,14 @@
 import {PermissionKeys} from './authorization/permission-keys';
+import {securityId, UserProfile} from '@loopback/security';
 
 export interface RequiredPermissions {
   required: PermissionKeys[];
 }
 
 export interface MyUserProfile {
-  id: string;
+  [securityId]: string,
   email?: string;
   name: string;
   rolId: number;
-  permissions: PermissionKeys[];
+  roles: [];
 }

@@ -9,7 +9,6 @@
 // }
 
 export const enum PermissionKeys {
-  // admin
-  adminRole = 'admin',
-  userRole = 'user'
+  adminRole = "admin",
+  userRole = "user"
 }

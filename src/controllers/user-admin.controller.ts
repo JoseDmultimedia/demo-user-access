@@ -53,11 +53,11 @@ export class UserAdminController {
 
     if (userData.rolId === 1){
       //userData.rolId = 1;
-      userData.permissions = [PermissionKeys.adminRole];
+      userData.roles = [PermissionKeys.adminRole];
       console.log('primer if')
     }else if (userData.rolId === 2){
       //userData.rolId  = 2;
-      userData.permissions = [PermissionKeys.userRole];
+      userData.roles = [PermissionKeys.userRole];
       console.log('segundo if')
     }else{
       throw new HttpErrors.UnprocessableEntity('Invalid Role')

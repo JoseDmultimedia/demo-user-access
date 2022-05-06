@@ -3,6 +3,7 @@ import {TokenServiceBindings} from '../keys';
 import {securityId, UserProfile} from '@loopback/security';
 import {HttpErrors} from '@loopback/rest';
 import {promisify} from 'util';
+import { MyUserProfile } from '../types';
 
 const jwt = require('jsonwebtoken');
 const signAsync = promisify(jwt.sign);
@@ -14,7 +15,7 @@ export class JWTService {
   public readonly jwtSecret: string;
 
   @inject(TokenServiceBindings.TOKEN_EXPIRES_IN)
-  public readonly expiresSecret: string;
+  public readonly jwtExpiresIn: string;
 
 
   async generateToken(userProfile: UserProfile): Promise<string> {
@@ -24,9 +25,15 @@ export class JWTService {
       )
     }
     let token = '';
+    const userInfoForToken = {
+      id: userProfile[securityId],
+      email: userProfile.email,
+      rolId: userProfile.rolId,
+      roles: userProfile.roles,
+    };
     try {
       token = await signAsync(userProfile, this.jwtSecret, {
-        expiresIn: this.expiresSecret
+        expiresIn: this.jwtExpiresIn
       });
       return token;
     } catch (err) {
@@ -50,12 +57,17 @@ export class JWTService {
       const decryptedToken = await verifyAsync(token, this.jwtSecret);
       const completeName = decryptedToken.first_name + decryptedToken.last_name;
       userProfile = Object.assign(
-        {[securityId]: '', id: '', email: '', rolId:'', permissions:[]},
-        {[securityId]: decryptedToken.id, id: decryptedToken.id, email: decryptedToken.email, rolId: decryptedToken.rolId, permissions: decryptedToken.permissions}
+        {[securityId]: '', id: '', email: '', rolId: '', roles: [""]},
+        {
+          [securityId]: decryptedToken.id,
+          id: decryptedToken.id,
+          email: decryptedToken.email,
+          rolId: decryptedToken.rolId,
+          roles: decryptedToken.roles,
+        },
       );
-    }
-    catch (err) {
-      throw new HttpErrors.Unauthorized(`Error verifying token:${err.message}`)
+    } catch (err) {
+      throw new HttpErrors.Unauthorized(`Error verifying token:${err.message}`);
     }
     return userProfile;
   }

@@ -50,7 +50,7 @@ export class User extends Entity {
   rolId?: number;
 
   @property.array(String)
-  permissions:string[];
+  roles:string[];
 
   constructor(data?: Partial<User>) {
     super(data);

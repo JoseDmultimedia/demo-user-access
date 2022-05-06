@@ -16,7 +16,14 @@ import {JWTService} from './services/jwt-service';
 import {PasswordHasherBindings, TokenServiceBindings, TokenServiceConstants, UserServiceBindings} from './keys';
 import {AuthenticationComponent, registerAuthenticationStrategy} from '@loopback/authentication';
 import {JWTStrategy} from './authentication-strategies/jwt-strategy';
-import {SECURITY_SCHEME_SPEC} from '@loopback/authentication-jwt';
+import {JWTAuthenticationComponent, SECURITY_SCHEME_SPEC} from '@loopback/authentication-jwt';
+import { basicAuthorization } from './services';
+// import KeycloakAuthorizationProvider from "./services/authorization-provider";
+import {
+  AuthorizationComponent,
+  AuthorizationTags,
+} from "@loopback/authorization";
+
 
 export {ApplicationConfig};
 
@@ -26,14 +33,25 @@ export class DemoUserAccessApplication extends BootMixin(
   constructor(options: ApplicationConfig = {}) {
     super(options);
 
-     // setup binding
-     this.setupBinding();
+    // Bind authentication component related elements
+    this.component(AuthenticationComponent);
+    this.component(JWTAuthenticationComponent);
+    this.component(AuthorizationComponent);
 
-     // Add security spec
-     this.addSecuritySpec();
+
+    // setup binding
+    this.setupBinding();
+
+    // Add security spec
+    this.addSecuritySpec();
+
+    console.log('antes de la estrategia');
 
     this.component(AuthenticationComponent);
     registerAuthenticationStrategy(this, JWTStrategy)
+
+    console.log('despues de la estrategia');
+
 
     // Set up the custom sequence
     this.sequence(MySequence);
@@ -76,6 +94,12 @@ export class DemoUserAccessApplication extends BootMixin(
         TokenServiceConstants.TOKEN_SECRET_VALUE)
     this.bind(TokenServiceBindings.TOKEN_EXPIRES_IN).to(
         TokenServiceConstants.TOKEN_EXPIRES_IN_VALUE);
+
+        // this.bind("authorizationProviders.keycloak-authorization-providers")
+        // .toProvider(KeycloakAuthorizationProvider)
+        // .tag(AuthorizationTags.AUTHORIZER);
+
+
   }
 
   addSecuritySpec(): void {
